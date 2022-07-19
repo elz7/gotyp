@@ -8,10 +8,22 @@ import (
 	"github.com/fatih/color"
 )
 
+// States
+const (
+	Menu  = "menu"
+	Debug = "debug"
+)
+
+// Views
 const (
 	MenuView         = "menu-view"
 	DebugConsoleView = "debug-console-view"
 	DebugPromptView  = "debug-prompt-view"
+)
+
+// VARS!
+var (
+	stateMachine *StateMachine[*gocui.Gui]
 )
 
 func main() {
@@ -21,8 +33,14 @@ func main() {
 	}
 	defer g.Close()
 
+	stateMachine = NewStateMachine(g, Menu)
+
 	g.SetManagerFunc(layout)
+
 	if err := setKeybindings(g); err != nil {
+		log.Panic(err)
+	}
+	if err := setTransitions(stateMachine); err != nil {
 		log.Panic(err)
 	}
 
@@ -46,7 +64,7 @@ func layout(g *gocui.Gui) error {
 		g.Fprint(v, "Hello World")
 	}
 
-	if v, err := g.SetView(DebugConsoleView, 1, 1, maxX-1, maxY-5, 0); err != nil {
+	if v, err := g.SetView(DebugConsoleView, 1, 1, maxX-1, maxY-4, 0); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -57,7 +75,7 @@ func layout(g *gocui.Gui) error {
 		g.SetViewOnBottom(DebugConsoleView)
 	}
 
-	if v, err := g.SetView(DebugPromptView, 1, maxY-4, maxX-1, maxY-1, 0); err != nil {
+	if v, err := g.SetView(DebugPromptView, 1, maxY-3, maxX-1, maxY-1, 0); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -89,15 +107,27 @@ func layout(g *gocui.Gui) error {
 func setKeybindings(g *gocui.Gui) error {
 	var err error
 	f := func(v string, k gocui.Key, m gocui.Modifier, h func(*gocui.Gui, *gocui.View) error) bool {
-		if err = g.SetKeybinding(v, k, m, h); err != nil {
-			return false
-		}
-		return true
+		err = g.SetKeybinding(v, k, m, h)
+		return err == nil
 	}
 
-	if f("", gocui.KeyCtrlC, gocui.ModNone, quit) &&
+	if f("", gocui.KeyCtrlC, gocui.ModNone, quit) && f("", gocui.KeyF10, gocui.ModNone, toggleDebug) &&
 		f(MenuView, gocui.KeyArrowUp, gocui.ModNone, cursorUp) && f(MenuView, gocui.KeyArrowDown, gocui.ModNone, cursorDown) &&
 		f(MenuView, gocui.KeyEnter, gocui.ModNone, selectMenuItem) && f(MenuView, gocui.KeySpace, gocui.ModNone, selectMenuItem) {
+		return nil
+	}
+
+	return err
+}
+
+func setTransitions(st *StateMachine[*gocui.Gui]) error {
+	var err error
+	f := func(from, to string, f TransitionFunc[*gocui.Gui]) bool {
+		err = st.AddTransition(from, to, f)
+		return err == nil
+	}
+
+	if f(Menu, Debug, fromMenuToDebug) && f(Debug, Menu, fromDebugToMenu) {
 		return nil
 	}
 
@@ -133,6 +163,29 @@ func selectMenuItem(g *gocui.Gui, v *gocui.View) error {
 	case 2:
 		return quit(g, v)
 	}
+
+	return nil
+}
+
+func toggleDebug(g *gocui.Gui, v *gocui.View) error {
+	return stateMachine.Toggle(Debug)
+}
+
+func fromMenuToDebug(g *gocui.Gui) error {
+	g.SetViewOnBottom(MenuView)
+	g.SetViewOnTop(DebugConsoleView)
+	g.SetViewOnTop(DebugPromptView)
+
+	g.SetCurrentView(DebugPromptView)
+	return nil
+}
+
+func fromDebugToMenu(g *gocui.Gui) error {
+	g.SetViewOnBottom(DebugConsoleView)
+	g.SetViewOnBottom(DebugPromptView)
+	g.SetViewOnTop(MenuView)
+
+	g.SetCurrentView(MenuView)
 
 	return nil
 }
