@@ -34,13 +34,11 @@ func main() {
 	defer g.Close()
 
 	stateMachine = NewStateMachine(g, Menu)
+	setTransitions(stateMachine)
 
 	g.SetManagerFunc(layout)
 
 	if err := setKeybindings(g); err != nil {
-		log.Panic(err)
-	}
-	if err := setTransitions(stateMachine); err != nil {
 		log.Panic(err)
 	}
 
@@ -120,20 +118,6 @@ func setKeybindings(g *gocui.Gui) error {
 	return err
 }
 
-func setTransitions(st *StateMachine[*gocui.Gui]) error {
-	var err error
-	f := func(from, to string, f TransitionFunc[*gocui.Gui]) bool {
-		err = st.AddTransition(from, to, f)
-		return err == nil
-	}
-
-	if f(Menu, Debug, fromMenuToDebug) && f(Debug, Menu, fromDebugToMenu) {
-		return nil
-	}
-
-	return err
-}
-
 func quit(*gocui.Gui, *gocui.View) error {
 	return gocui.ErrQuit
 }
@@ -169,23 +153,4 @@ func selectMenuItem(g *gocui.Gui, v *gocui.View) error {
 
 func toggleDebug(g *gocui.Gui, v *gocui.View) error {
 	return stateMachine.Toggle(Debug)
-}
-
-func fromMenuToDebug(g *gocui.Gui) error {
-	g.SetViewOnBottom(MenuView)
-	g.SetViewOnTop(DebugConsoleView)
-	g.SetViewOnTop(DebugPromptView)
-
-	g.SetCurrentView(DebugPromptView)
-	return nil
-}
-
-func fromDebugToMenu(g *gocui.Gui) error {
-	g.SetViewOnBottom(DebugConsoleView)
-	g.SetViewOnBottom(DebugPromptView)
-	g.SetViewOnTop(MenuView)
-
-	g.SetCurrentView(MenuView)
-
-	return nil
 }
