@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/awesome-gocui/gocui"
-	"github.com/fatih/color"
 )
 
 // States
@@ -37,7 +36,7 @@ func main() {
 	defer g.Close()
 
 	stateMachine = NewStateMachine(g, Menu)
-	setTransitions(stateMachine)
+	setTransitions(stateMachine, g)
 
 	g.SetManagerFunc(layout)
 
@@ -60,9 +59,6 @@ func layout(g *gocui.Gui) error {
 		}
 		v.Title = "GoTyp"
 		v.Frame = true
-
-		g := color.New(color.FgGreen)
-		g.Fprint(v, "Hello World")
 	}
 
 	if v, err := g.SetView(DebugConsoleView, 1, 1, maxX-1, maxY-4, 0); err != nil {
@@ -72,8 +68,7 @@ func layout(g *gocui.Gui) error {
 		v.Title = "Debug"
 		v.Frame = true
 		v.Autoscroll = true
-
-		g.SetViewOnBottom(DebugConsoleView)
+		v.Visible = false
 	}
 
 	if v, err := g.SetView(DebugPromptView, 1, maxY-3, maxX-1, maxY-1, 0); err != nil {
@@ -82,8 +77,7 @@ func layout(g *gocui.Gui) error {
 		}
 		v.Editable = true
 		v.Frame = true
-
-		g.SetViewOnBottom(DebugPromptView)
+		v.Visible = false
 	}
 
 	if v, err := g.SetView(MenuView, maxX/2-11, maxY/2-2, maxX/2+11, maxY/2+2, 0); err != nil {
@@ -108,8 +102,7 @@ func layout(g *gocui.Gui) error {
 		}
 		v.Frame = true
 		v.Editable = true
-
-		g.SetViewOnBottom(GameInputView)
+		v.Visible = false
 	}
 
 	if v, err := g.SetView(GameBoardView, maxX/2-23, maxY/2, maxX/2+23, maxY/2+6, 0); err != nil {
@@ -117,8 +110,7 @@ func layout(g *gocui.Gui) error {
 			return err
 		}
 		v.Frame = true
-
-		g.SetViewOnBottom(GameBoardView)
+		v.Visible = false
 	}
 
 	return nil

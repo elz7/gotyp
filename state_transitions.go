@@ -2,21 +2,26 @@ package main
 
 import "github.com/awesome-gocui/gocui"
 
-func setTransitions(st *StateMachine[*gocui.Gui]) {
+func setTransitions(st *StateMachine[*gocui.Gui], g *gocui.Gui) {
+
+	visible := func(visibility bool, views ...string) {
+		for _, vn := range views {
+			v, _ := g.View(vn)
+			v.Visible = visibility
+		}
+	}
 
 	st.AddTransition(Menu, Debug, func(g *gocui.Gui) error {
-		g.SetViewOnBottom(MenuView)
-		g.SetViewOnTop(DebugConsoleView)
-		g.SetViewOnTop(DebugPromptView)
+		visible(false, MenuView)
+		visible(true, DebugConsoleView, DebugPromptView)
 
 		g.SetCurrentView(DebugPromptView)
 		return nil
 	})
 
 	st.AddTransition(Debug, Menu, func(g *gocui.Gui) error {
-		g.SetViewOnBottom(DebugConsoleView)
-		g.SetViewOnBottom(DebugPromptView)
-		g.SetViewOnTop(MenuView)
+		visible(false, DebugPromptView, DebugConsoleView)
+		visible(true, MenuView)
 
 		g.SetCurrentView(MenuView)
 
