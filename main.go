@@ -12,6 +12,7 @@ import (
 const (
 	Menu  = "menu"
 	Debug = "debug"
+	Game  = "game"
 )
 
 // Views
@@ -19,6 +20,8 @@ const (
 	MenuView         = "menu-view"
 	DebugConsoleView = "debug-console-view"
 	DebugPromptView  = "debug-prompt-view"
+	GameInputView    = "game-input"
+	GameBoardView    = "game-board"
 )
 
 // VARS!
@@ -97,6 +100,25 @@ func layout(g *gocui.Gui) error {
 		fmt.Fprintf(v, "3. Quit")
 
 		g.SetCurrentView(MenuView)
+	}
+
+	if v, err := g.SetView(GameInputView, maxX/2-23, maxY/2-3, maxX/2+23, maxY/2-1, 0); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Frame = true
+		v.Editable = true
+
+		g.SetViewOnBottom(GameInputView)
+	}
+
+	if v, err := g.SetView(GameBoardView, maxX/2-23, maxY/2, maxX/2+23, maxY/2+6, 0); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Frame = true
+
+		g.SetViewOnBottom(GameBoardView)
 	}
 
 	return nil
