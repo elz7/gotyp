@@ -13,6 +13,11 @@ type StateMachine[T any] struct {
 	transitions         map[string]TransitionFunc[T]
 }
 
+type Transition[T any] struct {
+	From, To                  string
+	ForwardFunc, BackwardFunc TransitionFunc[T]
+}
+
 func NewStateMachine[T any](g T, initialState string) *StateMachine[T] {
 	return &StateMachine[T]{
 		g:           g,
@@ -21,10 +26,26 @@ func NewStateMachine[T any](g T, initialState string) *StateMachine[T] {
 	}
 }
 
-func (st *StateMachine[T]) AddTransition(from, to string, f TransitionFunc[T]) error {
+func (st StateMachine[T]) AddTransition(t Transition[T]) {
+	if t.From == "" || t.To == "" {
+		panic("fields From and To are both required")
+	}
+	if t.ForwardFunc == nil && t.BackwardFunc == nil {
+		panic("neither ForwardFunc nor BackwardFunc is specified")
+	}
+
+	if t.ForwardFunc != nil {
+		st.addTransition(t.From, t.To, t.ForwardFunc)
+	}
+	if t.BackwardFunc != nil {
+		st.addTransition(t.To, t.From, t.BackwardFunc)
+	}
+}
+
+func (st *StateMachine[T]) addTransition(from, to string, f TransitionFunc[T]) error {
 	k := fmt.Sprintf("%v->%v", from, to)
 	if _, ok := st.transitions[k]; ok {
-		return fmt.Errorf("transition from %v to %v already exists", from, to)
+		panic(fmt.Sprintf("transition from %v to %v already exists", from, to))
 	}
 	st.transitions[k] = f
 	return nil

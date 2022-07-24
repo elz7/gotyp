@@ -11,21 +11,20 @@ func setTransitions(st *StateMachine[*gocui.Gui], g *gocui.Gui) {
 		}
 	}
 
-	st.AddTransition(Menu, Debug, func(g *gocui.Gui) error {
-		visible(false, MenuView)
-		visible(true, DebugConsoleView, DebugPromptView)
-
-		g.SetCurrentView(DebugPromptView)
-		return nil
+	st.AddTransition(Transition[*gocui.Gui]{
+		From: Menu,
+		To:   Debug,
+		ForwardFunc: func(g *gocui.Gui) error {
+			visible(false, MenuView)
+			visible(true, DebugConsoleView, DebugPromptView)
+			g.SetCurrentView(DebugPromptView)
+			return nil
+		},
+		BackwardFunc: func(g *gocui.Gui) error {
+			visible(false, DebugPromptView, DebugConsoleView)
+			visible(true, MenuView)
+			g.SetCurrentView(MenuView)
+			return nil
+		},
 	})
-
-	st.AddTransition(Debug, Menu, func(g *gocui.Gui) error {
-		visible(false, DebugPromptView, DebugConsoleView)
-		visible(true, MenuView)
-
-		g.SetCurrentView(MenuView)
-
-		return nil
-	})
-
 }
