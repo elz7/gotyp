@@ -8,35 +8,85 @@ import (
 
 // Widgets
 const (
-	WidgetMenu        = "widget-menu"
-	WidgetDebug       = "widget-debug"
-	WidgetPreGameMenu = "widget-pre-game-menu"
-	WidgetGame        = "widget-game"
+	WidgetMainMenu           = "widget-main-menu"
+	WidgetDebug              = "widget-debug"
+	WidgetSelectGameModeMenu = "widget-select-game-mode-menu"
+	WidgetSettings           = "widget-settings"
+	WidgetGame               = "widget-game"
 )
 
 // Views
 const (
-	ViewApplication     = "view-application"
-	ViewMenu            = "view-menu"
-	ViewDebugConsole    = "view-debug-console"
-	ViewDebugPrompt     = "view-debug-prompt"
-	ViewPreGameMenu     = "view-pre-game-menu"
-	ViewGameDescription = "view-game-description"
-	ViewGameInput       = "view-game-input"
-	ViewGameBoard       = "view-game-board"
+	ViewApplication        = "view-application"
+	ViewMainMenu           = "view-main-menu"
+	ViewDebugConsole       = "view-debug-console"
+	ViewDebugPrompt        = "view-debug-prompt"
+	ViewSelectGameModeMenu = "view-select-game-mode-menu"
+	ViewGameDescription    = "view-game-description"
+	ViewGameInput          = "view-game-input"
+	ViewGameBoard          = "view-game-board"
+	ViewSettings           = "view-settings"
 )
 
 func addSwitches(vs *WidgetSwitcher) {
-	vs.AddSwitch(NewSwitch(WidgetMenu, WidgetDebug), func(g *gocui.Gui) error {
-		changeViewVisibility(g, false, ViewMenu)
+	// Debug section
+	vs.AddSwitch(NewSwitch(WidgetMainMenu, WidgetDebug), func(g *gocui.Gui) error {
+		changeViewVisibility(g, false, ViewMainMenu)
 		changeViewVisibility(g, true, ViewDebugConsole, ViewDebugPrompt)
 		g.SetCurrentView(ViewDebugPrompt)
 		return nil
 	})
-	vs.AddSwitch(NewSwitch(WidgetDebug, WidgetMenu), func(g *gocui.Gui) error {
+	vs.AddSwitch(NewSwitch(WidgetDebug, WidgetMainMenu), func(g *gocui.Gui) error {
 		changeViewVisibility(g, false, ViewDebugConsole, ViewDebugPrompt)
-		changeViewVisibility(g, true, ViewMenu)
-		g.SetCurrentView(ViewMenu)
+		changeViewVisibility(g, true, ViewMainMenu)
+		g.SetCurrentView(ViewMainMenu)
+		return nil
+	})
+	vs.AddSwitch(NewSwitch(WidgetSelectGameModeMenu, WidgetDebug), func(g *gocui.Gui) error {
+		changeViewVisibility(g, false, ViewSelectGameModeMenu)
+		changeViewVisibility(g, true, ViewDebugConsole, ViewDebugPrompt)
+		g.SetCurrentView(ViewDebugPrompt)
+		return nil
+	})
+	vs.AddSwitch(NewSwitch(WidgetDebug, WidgetSelectGameModeMenu), func(g *gocui.Gui) error {
+		changeViewVisibility(g, false, ViewDebugConsole, ViewDebugPrompt)
+		changeViewVisibility(g, true, ViewSelectGameModeMenu)
+		g.SetCurrentView(ViewMainMenu)
+		return nil
+	})
+	vs.AddSwitch(NewSwitch(WidgetSettings, WidgetDebug), func(g *gocui.Gui) error {
+		changeViewVisibility(g, false, ViewSettings)
+		changeViewVisibility(g, true, ViewDebugConsole, ViewDebugPrompt)
+		g.SetCurrentView(ViewDebugPrompt)
+		return nil
+	})
+	vs.AddSwitch(NewSwitch(WidgetDebug, WidgetSettings), func(g *gocui.Gui) error {
+		changeViewVisibility(g, false, ViewDebugConsole, ViewDebugPrompt)
+		changeViewVisibility(g, true, ViewSettings)
+		g.SetCurrentView(ViewMainMenu)
+		return nil
+	})
+	// End of debug section
+	vs.AddSwitch(NewSwitch(WidgetMainMenu, WidgetSelectGameModeMenu), func(g *gocui.Gui) error {
+		changeViewVisibility(g, false, ViewMainMenu)
+		changeViewVisibility(g, true, ViewSelectGameModeMenu)
+		g.SetCurrentView(ViewSelectGameModeMenu)
+		return nil
+	})
+	vs.AddSwitch(NewSwitch(WidgetSelectGameModeMenu, WidgetMainMenu), func(g *gocui.Gui) error {
+		changeViewVisibility(g, false, ViewSelectGameModeMenu)
+		changeViewVisibility(g, true, ViewMainMenu)
+		return nil
+	})
+	vs.AddSwitch(NewSwitch(WidgetMainMenu, WidgetSettings), func(g *gocui.Gui) error {
+		changeViewVisibility(g, false, ViewMainMenu)
+		changeViewVisibility(g, true, ViewSettings)
+		g.SetCurrentView(ViewSelectGameModeMenu)
+		return nil
+	})
+	vs.AddSwitch(NewSwitch(WidgetSettings, WidgetMainMenu), func(g *gocui.Gui) error {
+		changeViewVisibility(g, false, ViewSettings)
+		changeViewVisibility(g, true, ViewMainMenu)
 		return nil
 	})
 }
@@ -73,7 +123,7 @@ func layout(g *gocui.Gui) error {
 		v.Overwrite = true
 	}
 
-	if v, err := g.SetView(ViewMenu, maxX/2-11, maxY/2-2, maxX/2+11, maxY/2+2, 0); err != nil {
+	if v, err := g.SetView(ViewMainMenu, maxX/2-11, maxY/2-2, maxX/2+11, maxY/2+2, 0); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -86,7 +136,29 @@ func layout(g *gocui.Gui) error {
 		fmt.Fprintf(v, "2. Settings\n")
 		fmt.Fprintf(v, "3. Quit")
 
-		g.SetCurrentView(ViewMenu)
+		g.SetCurrentView(ViewMainMenu)
+	}
+
+	if v, err := g.SetView(ViewSelectGameModeMenu, maxX/2-11, maxY/2-2, maxX/2+11, maxY/2+2, 0); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Title = "Select Game Mode!"
+		v.Frame = true
+		v.SelFgColor = gocui.ColorGreen
+		v.Highlight = true
+		v.Visible = false
+	}
+
+	if v, err := g.SetView(ViewSettings, 1, 1, maxX-1, maxY-1, 0); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Title = "Settings"
+		v.Frame = true
+		v.SelFgColor = gocui.ColorGreen
+		v.Highlight = true
+		v.Visible = false
 	}
 
 	return nil
@@ -97,19 +169,19 @@ func setKeybindings(g *gocui.Gui) {
 	g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit)
 	g.SetKeybinding("", gocui.KeyF10, gocui.ModNone, toggleWidgetDebug)
 
-	g.SetKeybinding(ViewMenu, gocui.KeyArrowUp, gocui.ModNone, cursorUp)
-	g.SetKeybinding(ViewMenu, gocui.KeyArrowDown, gocui.ModNone, cursorDown)
-	g.SetKeybinding(ViewMenu, gocui.KeyEnter, gocui.ModNone, selectViewMenuItem)
-	g.SetKeybinding(ViewMenu, gocui.KeySpace, gocui.ModNone, selectViewMenuItem)
+	g.SetKeybinding(ViewMainMenu, gocui.KeyArrowUp, gocui.ModNone, cursorUp)
+	g.SetKeybinding(ViewMainMenu, gocui.KeyArrowDown, gocui.ModNone, cursorDown)
+	g.SetKeybinding(ViewMainMenu, gocui.KeyEnter, gocui.ModNone, selectViewMenuItem)
+	g.SetKeybinding(ViewMainMenu, gocui.KeySpace, gocui.ModNone, selectViewMenuItem)
 }
 
 func selectViewMenuItem(g *gocui.Gui, v *gocui.View) error {
 
 	switch _, i := v.Cursor(); i {
 	case 0:
-		return nil
+		return widgetSwitcher.Switch(WidgetSelectGameModeMenu)
 	case 1:
-		return nil
+		return widgetSwitcher.Switch(WidgetSettings)
 	case 2:
 		return quit(g, v)
 	}

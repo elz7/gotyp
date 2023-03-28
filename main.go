@@ -18,7 +18,7 @@ func main() {
 	}
 	defer g.Close()
 
-	widgetSwitcher = NewWidgetSwitcher(g, WidgetMenu)
+	widgetSwitcher = NewWidgetSwitcher(g, WidgetMainMenu)
 	addSwitches(widgetSwitcher)
 
 	g.SetManagerFunc(layout)
