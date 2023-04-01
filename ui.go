@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/awesome-gocui/gocui"
 )
@@ -111,6 +112,9 @@ func layout(g *gocui.Gui) error {
 		v.Autoscroll = true
 		v.Visible = false
 		v.Overwrite = true
+
+		initDebugConsole(v)
+		log.Println("[INFO]: Debug Console is initialized.")
 	}
 
 	if v, err := g.SetView(ViewDebugPrompt, 1, maxY-3, maxX-1, maxY-1, 0); err != nil {
