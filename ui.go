@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/awesome-gocui/gocui"
 )
@@ -32,29 +31,30 @@ const (
 func addSwitches(vs *WidgetSwitcher) {
 	// Debug section
 	vs.AddSwitch(NewSwitch(WidgetMainMenu, WidgetDebug), func(g *gocui.Gui) error {
-		changeViewVisibility(g, false, ViewMainMenu)
+		// changeViewVisibility(g, false, ViewMainMenu)
 		changeViewVisibility(g, true, ViewDebugConsole, ViewDebugPrompt)
-		g.SetCurrentView(ViewDebugPrompt)
+		// g.SetCurrentView(ViewDebugPrompt)
 		return nil
 	})
 	vs.AddSwitch(NewSwitch(WidgetDebug, WidgetMainMenu), func(g *gocui.Gui) error {
 		changeViewVisibility(g, false, ViewDebugConsole, ViewDebugPrompt)
-		changeViewVisibility(g, true, ViewMainMenu)
+		// changeViewVisibility(g, true, ViewMainMenu)
 		g.SetCurrentView(ViewMainMenu)
 		return nil
 	})
 	vs.AddSwitch(NewSwitch(WidgetSelectGameModeMenu, WidgetDebug), func(g *gocui.Gui) error {
-		changeViewVisibility(g, false, ViewSelectGameModeMenu)
+		// changeViewVisibility(g, false, ViewSelectGameModeMenu)
 		changeViewVisibility(g, true, ViewDebugConsole, ViewDebugPrompt)
-		g.SetCurrentView(ViewDebugPrompt)
+		// g.SetCurrentView(ViewDebugPrompt)
 		return nil
 	})
 	vs.AddSwitch(NewSwitch(WidgetDebug, WidgetSelectGameModeMenu), func(g *gocui.Gui) error {
 		changeViewVisibility(g, false, ViewDebugConsole, ViewDebugPrompt)
-		changeViewVisibility(g, true, ViewSelectGameModeMenu)
-		g.SetCurrentView(ViewMainMenu)
+		// changeViewVisibility(g, true, ViewSelectGameModeMenu)
+		g.SetCurrentView(ViewSelectGameModeMenu)
 		return nil
 	})
+
 	vs.AddSwitch(NewSwitch(WidgetSettings, WidgetDebug), func(g *gocui.Gui) error {
 		changeViewVisibility(g, false, ViewSettings)
 		changeViewVisibility(g, true, ViewDebugConsole, ViewDebugPrompt)
@@ -103,7 +103,7 @@ func layout(g *gocui.Gui) error {
 		v.Frame = true
 	}
 
-	if v, err := g.SetView(ViewDebugConsole, 1, 1, maxX-1, maxY-4, 0); err != nil {
+	if v, err := g.SetView(ViewDebugConsole, 1, 1, maxX-1, maxY/2-7, 0); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -114,10 +114,9 @@ func layout(g *gocui.Gui) error {
 		v.Overwrite = true
 
 		initDebugConsole(v)
-		log.Println("[INFO]: Debug Console is initialized.")
 	}
 
-	if v, err := g.SetView(ViewDebugPrompt, 1, maxY-3, maxX-1, maxY-1, 0); err != nil {
+	if v, err := g.SetView(ViewDebugPrompt, 1, maxY/2-6, maxX-1, maxY/2-4, 0); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -125,6 +124,7 @@ func layout(g *gocui.Gui) error {
 		v.Frame = true
 		v.Visible = false
 		v.Overwrite = true
+		v.Highlight = true
 	}
 
 	if v, err := g.SetView(ViewMainMenu, maxX/2-11, maxY/2-2, maxX/2+11, maxY/2+2, 0); err != nil {
@@ -172,11 +172,22 @@ func setKeybindings(g *gocui.Gui) {
 	// global
 	g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit)
 	g.SetKeybinding("", gocui.KeyF10, gocui.ModNone, toggleWidgetDebug)
+	g.SetKeybinding("", gocui.MouseLeft, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		mx, my := g.MousePosition()
+		x0, y0, x1, y1, _ := g.ViewPosition(ViewDebugPrompt)
+
+		if x0 <= mx && mx <= x1 && y0 <= my && my <= y1 {
+			g.SetCurrentView(ViewDebugPrompt)
+		}
+
+		return nil
+	})
 
 	g.SetKeybinding(ViewMainMenu, gocui.KeyArrowUp, gocui.ModNone, cursorUp)
 	g.SetKeybinding(ViewMainMenu, gocui.KeyArrowDown, gocui.ModNone, cursorDown)
 	g.SetKeybinding(ViewMainMenu, gocui.KeyEnter, gocui.ModNone, selectViewMenuItem)
 	g.SetKeybinding(ViewMainMenu, gocui.KeySpace, gocui.ModNone, selectViewMenuItem)
+
 }
 
 func selectViewMenuItem(g *gocui.Gui, v *gocui.View) error {

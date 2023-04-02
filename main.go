@@ -18,6 +18,8 @@ func main() {
 	}
 	defer g.Close()
 
+	g.Mouse = true
+
 	widgetSwitcher = NewWidgetSwitcher(g, WidgetMainMenu)
 	addSwitches(widgetSwitcher)
 
