@@ -9,5 +9,5 @@ func initDebugConsole(w io.Writer) {
 	log.SetFlags(log.LstdFlags | log.LUTC)
 	log.SetOutput(w)
 
-	log.Println("[INFO]: Debug Console is initialized.")
+	log.Println("[INF]: Debug Console is initialized.")
 }
