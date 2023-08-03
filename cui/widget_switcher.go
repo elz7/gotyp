@@ -23,8 +23,8 @@ func NewWidgetSwitcher(g *gocui.Gui, initialWidget Widget) *WidgetSwitcher {
 	return &WidgetSwitcher{gui: g, cur: initialWidget, switches: sw}
 }
 
-func (ws *WidgetSwitcher) AddSwitch(s Switch, f SwitchFunc) {
-	ws.switches[s] = f
+func (ws *WidgetSwitcher) AddSwitch(from, to Widget, f SwitchFunc) {
+	ws.switches[NewSwitch(from, to)] = f
 }
 
 func (ws *WidgetSwitcher) Switch(to Widget) error {

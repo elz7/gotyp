@@ -37,29 +37,35 @@ func mainMenuArrowDown(g *gocui.Gui, v *gocui.View) error {
 
 func gameMenuArrowUp(g *gocui.Gui, v *gocui.View) error {
 	c := cursorUp(v)
-	dv, _ := g.View(ViewGameModeDescription)
+
 	if c == len(game.GameModes) {
-		setViewBufferString(dv, "Main Menu")
-	} else {
-		setViewBufferString(dv, game.GameModes[c].Description)
+		return setViewBufferString(g, ViewGameModeDescription, "Back to main menu.")
 	}
 
-	return nil
+	return setViewBufferString(g, ViewGameModeDescription, game.GameModes[c].Description)
 }
 
 func gameMenuArrowDown(g *gocui.Gui, v *gocui.View) error {
 	c := cursorDown(v)
-	dv, _ := g.View(ViewGameModeDescription)
+
 	if c == len(game.GameModes) {
-		setViewBufferString(dv, "Main Menu")
-	} else {
-		setViewBufferString(dv, game.GameModes[c].Description)
+		return setViewBufferString(g, ViewGameModeDescription, "Back to main menu.")
 	}
-	return nil
+
+	return setViewBufferString(g, ViewGameModeDescription, game.GameModes[c].Description)
 }
 
 func gameMenuEnter(g *gocui.Gui, v *gocui.View) error {
-	return nil
+	c := cursorPos(v)
+
+	if c == len(game.GameModes) {
+		widgetSwitcher.Switch(WidgetMainMenu)
+		return nil
+	}
+
+	// gameMode := game.GameModes[c]
+
+	return widgetSwitcher.Switch(WidgetGame)
 }
 
 func changeViewVisibility(g *gocui.Gui, b bool, views ...string) {
@@ -69,9 +75,14 @@ func changeViewVisibility(g *gocui.Gui, b bool, views ...string) {
 	}
 }
 
-func setViewBufferString(v *gocui.View, s string) {
+func setViewBufferString(g *gocui.Gui, view, text string) error {
+	v, err := g.View(view)
+	if err != nil {
+		return err
+	}
 	v.Clear()
-	fmt.Fprint(v, s)
+	fmt.Fprint(v, text)
+	return nil
 }
 
 func quit(*gocui.Gui, *gocui.View) error {

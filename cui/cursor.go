@@ -11,11 +11,11 @@ func cursorUp(v *gocui.View) int {
 	_, curOrig := v.Origin()
 
 	_, viewLinesCount := v.Size()
-	bufferLinesCount := v.LinesHeight()
+	totalLinesCount := v.LinesHeight()
 
 	switch {
 	case curLine == 0 && curOrig == 0: // the first line
-		curOrig = viewLinesCount * (int(math.Ceil(float64(bufferLinesCount)/float64(viewLinesCount))) - 1)
+		curOrig = viewLinesCount * (int(math.Ceil(float64(totalLinesCount)/float64(viewLinesCount))) - 1)
 		curLine = viewLinesCount - curOrig
 
 	case curLine == 0 && curOrig != 0: // the first line somewhere in the middle
@@ -39,10 +39,10 @@ func cursorDown(v *gocui.View) int {
 	curLine = curLine + curOrig // current line within the buffer, not the view
 
 	_, viewLinesCount := v.Size()
-	bufferLinesCount := v.LinesHeight()
+	totalLinesCount := v.LinesHeight()
 
 	switch {
-	case curLine == bufferLinesCount-1: // the last line
+	case curLine == totalLinesCount-1: // the last line
 		curOrig = 0
 		curLine = 0
 	case (curLine+1)%viewLinesCount == 0: // last line somewhere in the middle

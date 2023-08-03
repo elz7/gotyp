@@ -117,5 +117,22 @@ func layout(g *gocui.Gui) error {
 		v.Visible = false
 	}
 
+	if v, err := g.SetView(ViewGameInput, maxX/2-25, maxY/2-5, maxX/2+25, maxY/2-3, 0); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Frame = true
+		v.Visible = false
+		v.Editable = true
+	}
+
+	if v, err := g.SetView(ViewGameBoard, maxX/2-25, maxY/2-2, maxX/2+25, maxY/2+6, 0); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		v.Frame = true
+		v.Visible = false
+	}
+
 	return nil
 }
