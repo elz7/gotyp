@@ -214,7 +214,7 @@ func setKeybindings(g *gocui.Gui) {
 
 func selectViewMenuItem(g *gocui.Gui, v *gocui.View) error {
 
-	switch _, i := v.Cursor(); i {
+	switch cursorPos(v) {
 	case 0:
 		return widgetSwitcher.Switch(WidgetSelectGameMode)
 	case 1:
@@ -325,6 +325,12 @@ func cursorDown(v *gocui.View) int {
 	v.SetCursor(0, curLine)
 
 	return curOrig + curLine
+}
+
+func cursorPos(v *gocui.View) int {
+	_, y := v.Cursor()
+	_, o := v.Origin()
+	return y + o
 }
 
 func quit(*gocui.Gui, *gocui.View) error {
