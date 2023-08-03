@@ -1,11 +1,11 @@
-package main
+package game
 
 type GameMode struct {
 	Name        string
 	Description string
 }
 
-var gameModes = []GameMode{
+var GameModes = []GameMode{
 	{
 		Name:        "Typing speed Test",
 		Description: "Try to type as fast as you can",

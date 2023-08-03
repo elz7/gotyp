@@ -4,11 +4,7 @@ import (
 	"log"
 
 	"github.com/awesome-gocui/gocui"
-)
-
-// VARS!
-var (
-	widgetSwitcher *WidgetSwitcher
+	"github.com/elz7/gotyp/cui"
 )
 
 func main() {
@@ -20,11 +16,7 @@ func main() {
 
 	g.Mouse = true
 
-	widgetSwitcher = NewWidgetSwitcher(g, WidgetMainMenu)
-	addSwitches(widgetSwitcher)
-
-	g.SetManagerFunc(layout)
-	setKeybindings(g)
+	cui.Initialize(g)
 
 	err = g.MainLoop()
 	if err != nil && err != gocui.ErrQuit {
