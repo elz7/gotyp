@@ -7,7 +7,7 @@ import (
 	"github.com/elz7/gotyp/game"
 )
 
-func selectViewMenuItem(g *gocui.Gui, v *gocui.View) error {
+func mainMenuEnter(g *gocui.Gui, v *gocui.View) error {
 
 	switch cursorPos(v) {
 	case 0:
@@ -21,21 +21,21 @@ func selectViewMenuItem(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
-func toggleWidgetDebug(g *gocui.Gui, v *gocui.View) error {
+func debugF10(g *gocui.Gui, v *gocui.View) error {
 	return widgetSwitcher.Toggle(WidgetDebug)
 }
 
-func mainMenuCursorUp(g *gocui.Gui, v *gocui.View) error {
+func mainMenuArrowUp(g *gocui.Gui, v *gocui.View) error {
 	cursorUp(v)
 	return nil
 }
 
-func mainMenuCursorDown(g *gocui.Gui, v *gocui.View) error {
+func mainMenuArrowDown(g *gocui.Gui, v *gocui.View) error {
 	cursorDown(v)
 	return nil
 }
 
-func gameModeMenuCursorUp(g *gocui.Gui, v *gocui.View) error {
+func gameMenuArrowUp(g *gocui.Gui, v *gocui.View) error {
 	c := cursorUp(v)
 	dv, _ := g.View(ViewGameModeDescription)
 	if c == len(game.GameModes) {
@@ -43,11 +43,11 @@ func gameModeMenuCursorUp(g *gocui.Gui, v *gocui.View) error {
 	} else {
 		setViewBufferString(dv, game.GameModes[c].Description)
 	}
-	return nil
 
+	return nil
 }
 
-func gameModeMenuCursorDown(g *gocui.Gui, v *gocui.View) error {
+func gameMenuArrowDown(g *gocui.Gui, v *gocui.View) error {
 	c := cursorDown(v)
 	dv, _ := g.View(ViewGameModeDescription)
 	if c == len(game.GameModes) {
@@ -55,6 +55,10 @@ func gameModeMenuCursorDown(g *gocui.Gui, v *gocui.View) error {
 	} else {
 		setViewBufferString(dv, game.GameModes[c].Description)
 	}
+	return nil
+}
+
+func gameMenuEnter(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
