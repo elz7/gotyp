@@ -1,6 +1,6 @@
 module github.com/elz7/gotyp
 
-go 1.18
+go 1.26.4
 
 require github.com/awesome-gocui/gocui v1.1.0
 

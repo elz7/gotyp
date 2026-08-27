@@ -1,8 +1,6 @@
 package cui
 
 import (
-	"fmt"
-
 	"github.com/awesome-gocui/gocui"
 	"github.com/elz7/gotyp/game"
 )
@@ -38,7 +36,7 @@ func mainMenuArrowDown(g *gocui.Gui, v *gocui.View) error {
 func gameMenuArrowUp(g *gocui.Gui, v *gocui.View) error {
 	c := cursorUp(v)
 
-	if c == len(game.GameModes) {
+	if c >= len(game.GameModes) {
 		return setViewBufferString(g, ViewGameModeDescription, "Back to main menu.")
 	}
 
@@ -48,7 +46,7 @@ func gameMenuArrowUp(g *gocui.Gui, v *gocui.View) error {
 func gameMenuArrowDown(g *gocui.Gui, v *gocui.View) error {
 	c := cursorDown(v)
 
-	if c == len(game.GameModes) {
+	if c >= len(game.GameModes) {
 		return setViewBufferString(g, ViewGameModeDescription, "Back to main menu.")
 	}
 
@@ -58,30 +56,27 @@ func gameMenuArrowDown(g *gocui.Gui, v *gocui.View) error {
 func gameMenuEnter(g *gocui.Gui, v *gocui.View) error {
 	c := cursorPos(v)
 
-	if c == len(game.GameModes) {
+	// Back to main menu
+	if c >= len(game.GameModes) {
 		widgetSwitcher.Switch(WidgetMainMenu)
 		return nil
 	}
 
-	// gameMode := game.GameModes[c]
+	gameMode := game.GameModes[c]
+	game.CurrentGame = gameMode.CreateGame()
+
+	board, _ := g.View(ViewGameBoard)
+	w, h := board.Size()
+	data := game.CurrentGame.GenerateGameData(w-1, h)
+	setViewBufferString(g, ViewGameBoard, data)
 
 	return widgetSwitcher.Switch(WidgetGame)
 }
 
-func changeViewVisibility(g *gocui.Gui, b bool, views ...string) {
-	for _, it := range views {
-		v, _ := g.View(it)
-		v.Visible = b
-	}
-}
-
-func setViewBufferString(g *gocui.Gui, view, text string) error {
-	v, err := g.View(view)
-	if err != nil {
-		return err
-	}
-	v.Clear()
-	fmt.Fprint(v, text)
+func gameInputEnter(g *gocui.Gui, v *gocui.View) error {
+	input := v.Buffer()
+	defer v.Clear()
+	game.CurrentGame.PlayerMove(input)
 	return nil
 }
 

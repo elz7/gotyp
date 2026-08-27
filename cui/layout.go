@@ -100,10 +100,9 @@ func layout(g *gocui.Gui) error {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
-		v.Frame = true
+		v.Frame = false
 		v.Visible = false
 		v.Wrap = true
-
 	}
 
 	if v, err := g.SetView(ViewSettings, 1, 1, maxX-1, maxY-1, 0); err != nil {
@@ -117,7 +116,13 @@ func layout(g *gocui.Gui) error {
 		v.Visible = false
 	}
 
-	if v, err := g.SetView(ViewGameInput, maxX/2-25, maxY/2-5, maxX/2+25, maxY/2-3, 0); err != nil {
+	gameViewHeight := 4
+	gameViewWidth := 64
+
+	if v, err := g.SetView(ViewGameInput,
+		maxX/2-gameViewWidth/2-1, maxY/2-5,
+		maxX/2+gameViewWidth/2+1, maxY/2-3,
+		0); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -126,7 +131,10 @@ func layout(g *gocui.Gui) error {
 		v.Editable = true
 	}
 
-	if v, err := g.SetView(ViewGameBoard, maxX/2-25, maxY/2-2, maxX/2+25, maxY/2+6, 0); err != nil {
+	if v, err := g.SetView(ViewGameBoard,
+		maxX/2-gameViewWidth/2-1, maxY/2-2,
+		maxX/2+gameViewWidth/2+1, maxY/2+gameViewHeight-1,
+		0); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}

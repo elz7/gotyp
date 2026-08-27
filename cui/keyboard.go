@@ -17,6 +17,8 @@ func setKeybindings(g *gocui.Gui) {
 		return nil
 	})
 
+	g.SetKeybinding(ViewDebugPrompt, gocui.KeyEnter, gocui.ModNone, debugPromptEnter)
+
 	g.SetKeybinding(ViewMainMenu, gocui.KeyArrowUp, gocui.ModNone, mainMenuArrowUp)
 	g.SetKeybinding(ViewMainMenu, gocui.KeyArrowDown, gocui.ModNone, mainMenuArrowDown)
 	g.SetKeybinding(ViewMainMenu, gocui.KeyEnter, gocui.ModNone, mainMenuEnter)
@@ -24,4 +26,6 @@ func setKeybindings(g *gocui.Gui) {
 	g.SetKeybinding(ViewGameModeMenu, gocui.KeyArrowUp, gocui.ModNone, gameMenuArrowUp)
 	g.SetKeybinding(ViewGameModeMenu, gocui.KeyArrowDown, gocui.ModNone, gameMenuArrowDown)
 	g.SetKeybinding(ViewGameModeMenu, gocui.KeyEnter, gocui.ModNone, gameMenuEnter)
+
+	g.SetKeybinding(ViewGameInput, gocui.KeyEnter, gocui.ModNone, gameInputEnter)
 }
