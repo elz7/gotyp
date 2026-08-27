@@ -45,6 +45,8 @@ func addWidgetSwitches(ws *WidgetSwitcher) {
 		changeViewVisibility(g, false, ViewSettings)
 		changeViewVisibility(g, true, ViewDebugConsole, ViewDebugPrompt)
 		g.SetCurrentView(ViewDebugPrompt)
+		g.SetViewOnTop(ViewDebugPrompt)
+		g.SetViewOnTop(ViewDebugConsole)
 		return nil
 	})
 	ws.AddSwitch(WidgetDebug, WidgetSettings, func(g *gocui.Gui) error {
@@ -67,6 +69,18 @@ func addWidgetSwitches(ws *WidgetSwitcher) {
 		g.SetCurrentView(ViewGameInput)
 		return nil
 	})
+	ws.AddSwitch(WidgetDebug, WidgetGameScore, func(g *gocui.Gui) error {
+		changeViewVisibility(g, false, ViewDebugPrompt, ViewDebugConsole)
+		g.SetCurrentView(ViewGameScore)
+		return nil
+	})
+	ws.AddSwitch(WidgetGameScore, WidgetDebug, func(g *gocui.Gui) error {
+		changeViewVisibility(g, true, ViewDebugPrompt, ViewDebugConsole)
+		g.SetCurrentView(ViewDebugPrompt)
+		g.SetViewOnTop(ViewDebugPrompt)
+		g.SetViewOnTop(ViewDebugConsole)
+		return nil
+	})
 	/* End of Debug */
 
 	ws.AddSwitch(WidgetMainMenu, WidgetSelectGameMode, func(g *gocui.Gui) error {
@@ -76,7 +90,7 @@ func addWidgetSwitches(ws *WidgetSwitcher) {
 		v, _ := g.View(ViewGameModeMenu)
 		v.SetOrigin(0, 0)
 		v.SetCursor(0, 0)
-		setViewBufferString(g, ViewGameModeDescription, game.GameModes[0].Description)
+		SetViewBufferString(g, ViewGameModeDescription, game.GameModes[0].Description)
 
 		g.SetCurrentView(ViewGameModeMenu)
 		return nil
@@ -104,6 +118,12 @@ func addWidgetSwitches(ws *WidgetSwitcher) {
 		changeViewVisibility(g, true, ViewGameInput, ViewGameBoard)
 
 		g.SetCurrentView(ViewGameInput)
+		return nil
+	})
+	ws.AddSwitch(WidgetGame, WidgetGameScore, func(g *gocui.Gui) error {
+		changeViewVisibility(g, false, ViewGameInput, ViewGameBoard)
+		changeViewVisibility(g, true, ViewGameScore)
+		g.SetCurrentView(ViewGameScore)
 		return nil
 	})
 }

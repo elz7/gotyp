@@ -13,7 +13,7 @@ func changeViewVisibility(g *gocui.Gui, b bool, views ...string) {
 	}
 }
 
-func setViewBufferString(g *gocui.Gui, view, text string) error {
+func SetViewBufferString(g *gocui.Gui, view, text string) error {
 	v, err := g.View(view)
 	if err != nil {
 		return err

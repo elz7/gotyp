@@ -1,10 +1,15 @@
 package game
 
-import "math/rand"
+import (
+	"math/rand"
+
+	"github.com/awesome-gocui/gocui"
+)
 
 type Game interface {
-	PlayerMove(input string)
-	GenerateGameData(x, y int) string
+	PlayerMove(v *gocui.View, input string)
+	GenerateGameData(b *gocui.View)
+	Score() (correct int, wrong int)
 }
 
 var CurrentGame Game

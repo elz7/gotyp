@@ -1,6 +1,8 @@
 package cui
 
 import (
+	"fmt"
+
 	"github.com/awesome-gocui/gocui"
 	"github.com/elz7/gotyp/game"
 )
@@ -53,20 +55,20 @@ func gameMenuArrowUp(g *gocui.Gui, v *gocui.View) error {
 	c := cursorUp(v)
 
 	if c >= len(game.GameModes) {
-		return setViewBufferString(g, ViewGameModeDescription, "Back to main menu.")
+		return SetViewBufferString(g, ViewGameModeDescription, "Back to main menu.")
 	}
 
-	return setViewBufferString(g, ViewGameModeDescription, game.GameModes[c].Description)
+	return SetViewBufferString(g, ViewGameModeDescription, game.GameModes[c].Description)
 }
 
 func gameMenuArrowDown(g *gocui.Gui, v *gocui.View) error {
 	c := cursorDown(v)
 
 	if c >= len(game.GameModes) {
-		return setViewBufferString(g, ViewGameModeDescription, "Back to main menu.")
+		return SetViewBufferString(g, ViewGameModeDescription, "Back to main menu.")
 	}
 
-	return setViewBufferString(g, ViewGameModeDescription, game.GameModes[c].Description)
+	return SetViewBufferString(g, ViewGameModeDescription, game.GameModes[c].Description)
 }
 
 func gameMenuEnter(g *gocui.Gui, v *gocui.View) error {
@@ -82,9 +84,16 @@ func gameMenuEnter(g *gocui.Gui, v *gocui.View) error {
 	game.CurrentGame = gameMode.CreateGame()
 
 	board, _ := g.View(ViewGameBoard)
-	w, h := board.Size()
-	data := game.CurrentGame.GenerateGameData(w, h)
-	setViewBufferString(g, ViewGameBoard, data)
+	game.CurrentGame.GenerateGameData(board)
+
+	go timer(g)
+	go func() {
+		<-syncGameOver
+		widgetSwitcher.Switch(WidgetGameScore)
+		c, w := game.CurrentGame.Score()
+		v, _ := g.View(ViewGameScore)
+		fmt.Fprintf(v, "Correct = %d\nWrong = %d", c, w)
+	}()
 
 	return widgetSwitcher.Switch(WidgetGame)
 }
@@ -92,7 +101,8 @@ func gameMenuEnter(g *gocui.Gui, v *gocui.View) error {
 func gameInputEnter(g *gocui.Gui, v *gocui.View) error {
 	input := v.Buffer()
 	defer v.Clear()
-	game.CurrentGame.PlayerMove(input)
+	b, _ := g.View(ViewGameBoard)
+	game.CurrentGame.PlayerMove(b, input)
 	return nil
 }
 

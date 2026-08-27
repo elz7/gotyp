@@ -9,5 +9,5 @@ type GameSettings struct {
 
 var Settings = GameSettings{
 	Language:      "en",
-	RoundDuration: time.Minute,
+	RoundDuration: 10 * time.Second,
 }
