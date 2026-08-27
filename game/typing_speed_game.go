@@ -28,6 +28,8 @@ func (g *TypingSpeedGame) GenerateGameData(x, y int) string {
 		}
 	}
 
+	log.Println(builder.String())
+
 	return builder.String()
 }
 

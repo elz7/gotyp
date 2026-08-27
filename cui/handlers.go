@@ -23,6 +23,22 @@ func debugF10(g *gocui.Gui, v *gocui.View) error {
 	return widgetSwitcher.Toggle(WidgetDebug)
 }
 
+func debugArrowUp(g *gocui.Gui, v *gocui.View) error {
+	v, _ = g.View(ViewDebugConsole)
+	v.Autoscroll = false
+	x, y := v.Origin()
+	v.SetOrigin(x, y-1)
+	return nil
+}
+
+func debugArrowDown(g *gocui.Gui, v *gocui.View) error {
+	v, _ = g.View(ViewDebugConsole)
+	v.Autoscroll = false
+	x, y := v.Origin()
+	v.SetOrigin(x, y+1)
+	return nil
+}
+
 func mainMenuArrowUp(g *gocui.Gui, v *gocui.View) error {
 	cursorUp(v)
 	return nil
@@ -67,7 +83,7 @@ func gameMenuEnter(g *gocui.Gui, v *gocui.View) error {
 
 	board, _ := g.View(ViewGameBoard)
 	w, h := board.Size()
-	data := game.CurrentGame.GenerateGameData(w-1, h)
+	data := game.CurrentGame.GenerateGameData(w, h)
 	setViewBufferString(g, ViewGameBoard, data)
 
 	return widgetSwitcher.Switch(WidgetGame)

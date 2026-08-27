@@ -18,6 +18,9 @@ func debugPromptEnter(g *gocui.Gui, v *gocui.View) error {
 	prompt := v.Buffer()
 	defer v.Clear()
 
+	c, _ := g.View(ViewDebugConsole)
+	c.Autoscroll = true
+
 	switch prompt {
 	case "/exit":
 		return gocui.ErrQuit

@@ -18,6 +18,8 @@ func setKeybindings(g *gocui.Gui) {
 	})
 
 	g.SetKeybinding(ViewDebugPrompt, gocui.KeyEnter, gocui.ModNone, debugPromptEnter)
+	g.SetKeybinding(ViewDebugPrompt, gocui.KeyArrowUp, gocui.ModAlt, debugArrowUp)
+	g.SetKeybinding(ViewDebugPrompt, gocui.KeyArrowDown, gocui.ModAlt, debugArrowDown)
 
 	g.SetKeybinding(ViewMainMenu, gocui.KeyArrowUp, gocui.ModNone, mainMenuArrowUp)
 	g.SetKeybinding(ViewMainMenu, gocui.KeyArrowDown, gocui.ModNone, mainMenuArrowDown)
