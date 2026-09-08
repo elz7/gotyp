@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/awesome-gocui/gocui"
@@ -15,13 +16,14 @@ type TypingSpeedGame struct {
 	red   *color.Color
 }
 
-func (g *TypingSpeedGame) PlayerMove(v *gocui.View, value string) {
+func (g *TypingSpeedGame) PlayerMove(v *gocui.View, value string) bool {
 	w := g.words[g.pos]
 	var color *color.Color
 
-	old := w
-	if w[0] == '\n' {
-		w = w[1:]
+	if w == "\n" {
+		fmt.Fprint(v, "\n")
+		g.pos++
+		w = g.words[g.pos]
 	}
 
 	if w == value {
@@ -31,11 +33,11 @@ func (g *TypingSpeedGame) PlayerMove(v *gocui.View, value string) {
 		color = g.red
 		g.score.Wrong++
 	}
-	w = old
 
 	color.Fprintf(v, "%s ", w)
-
 	g.pos++
+
+	return g.pos == len(g.words)-1
 }
 
 func (g *TypingSpeedGame) Score() Score {
@@ -43,6 +45,9 @@ func (g *TypingSpeedGame) Score() Score {
 }
 
 func (g *TypingSpeedGame) GenerateGameData(b *gocui.View) {
+	g.words = make([]string, 0)
+	g.pos = 0
+
 	words := getWords(Settings.Language)
 	x, y := b.Size()
 
@@ -52,17 +57,19 @@ func (g *TypingSpeedGame) GenerateGameData(b *gocui.View) {
 		for {
 			w := getRandomWordThatFits(words, remainingSpace)
 			builder.WriteString(w)
+			g.words = append(g.words, w)
 			if w == "\n" {
 				break
 			}
 			builder.WriteString(" ")
-			g.words = append(g.words, w)
 			remainingSpace -= len(w) + 1
 		}
 	}
 
+	b.SetWritePos(0, 0)
 	b.WriteString(builder.String())
 	b.SetWritePos(0, 0)
+
 }
 
 func NewTypingSpeedGame() Game {

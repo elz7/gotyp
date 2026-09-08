@@ -12,7 +12,8 @@ type Score struct {
 }
 
 type Game interface {
-	PlayerMove(v *gocui.View, input string)
+	// Returns true if there is a need for generating new game data, false otherwise.
+	PlayerMove(v *gocui.View, input string) bool
 	GenerateGameData(b *gocui.View)
 	Score() Score
 }

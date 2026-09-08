@@ -83,8 +83,8 @@ func gameMenuEnter(g *gocui.Gui, v *gocui.View) error {
 	gameMode := game.GameModes[c]
 	game.CurrentGame = gameMode.CreateGame()
 
-	board, _ := g.View(ViewGameBoard)
-	game.CurrentGame.GenerateGameData(board)
+	b, _ := g.View(ViewGameBoard)
+	game.CurrentGame.GenerateGameData(b)
 
 	go timer(g)
 	go func() {
@@ -102,7 +102,9 @@ func gameInputEnter(g *gocui.Gui, v *gocui.View) error {
 	input := v.Buffer()
 	defer v.Clear()
 	b, _ := g.View(ViewGameBoard)
-	game.CurrentGame.PlayerMove(b, input)
+	if game.CurrentGame.PlayerMove(b, input) {
+		game.CurrentGame.GenerateGameData(b)
+	}
 	return nil
 }
 

@@ -13,7 +13,8 @@ var GameModes = []GameMode{
 		CreateGame:  NewTypingSpeedGame,
 	},
 	{
-		Name:        "Blind Typing",
-		Description: "Several words will appear on the screen. Remember and retype them all",
+		Name:        "Lyrics Game",
+		Description: "Enter song name and practice typing the lyrics",
+		CreateGame:  NewLyricsGame,
 	},
 }
