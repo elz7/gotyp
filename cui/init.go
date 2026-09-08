@@ -71,7 +71,7 @@ func addWidgetSwitches(ws *WidgetSwitcher) {
 	})
 	ws.AddSwitch(WidgetDebug, WidgetGameScore, func(g *gocui.Gui) error {
 		changeViewVisibility(g, false, ViewDebugPrompt, ViewDebugConsole)
-		g.SetCurrentView(ViewGameScore)
+		g.SetCurrentView(ViewGameEnd)
 		return nil
 	})
 	ws.AddSwitch(WidgetGameScore, WidgetDebug, func(g *gocui.Gui) error {
@@ -122,8 +122,8 @@ func addWidgetSwitches(ws *WidgetSwitcher) {
 	})
 	ws.AddSwitch(WidgetGame, WidgetGameScore, func(g *gocui.Gui) error {
 		changeViewVisibility(g, false, ViewGameInput, ViewGameBoard)
-		changeViewVisibility(g, true, ViewGameScore)
-		g.SetCurrentView(ViewGameScore)
+		changeViewVisibility(g, true, ViewGameEnd)
+		g.SetCurrentView(ViewGameEnd)
 		return nil
 	})
 }

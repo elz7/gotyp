@@ -28,7 +28,7 @@ const (
 	ViewGameInput           = "view-game-input"
 	ViewGameBoard           = "view-game-board"
 	ViewSettings            = "view-settings"
-	ViewGameScore           = "view-game-score"
+	ViewGameEnd             = "view-game-score"
 )
 
 func layout(g *gocui.Gui) error {
@@ -144,7 +144,7 @@ func layout(g *gocui.Gui) error {
 		v.Visible = false
 	}
 
-	if v, err := g.SetView(ViewGameScore,
+	if v, err := g.SetView(ViewGameEnd,
 		maxX/2-25, maxY/2-3,
 		maxX/2+25, maxY/2+3,
 		0); err != nil {

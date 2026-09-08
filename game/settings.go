@@ -3,11 +3,11 @@ package game
 import "time"
 
 type GameSettings struct {
-	Language      string
-	RoundDuration time.Duration
+	Language     string
+	GameDuration time.Duration
 }
 
 var Settings = GameSettings{
-	Language:      "en",
-	RoundDuration: 10 * time.Second,
+	Language:     "en",
+	GameDuration: 10 * time.Second,
 }

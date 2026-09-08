@@ -30,4 +30,5 @@ func setKeybindings(g *gocui.Gui) {
 	g.SetKeybinding(ViewGameModeMenu, gocui.KeyEnter, gocui.ModNone, gameMenuEnter)
 
 	g.SetKeybinding(ViewGameInput, gocui.KeyEnter, gocui.ModNone, gameInputEnter)
+	g.SetKeybinding(ViewGameInput, gocui.KeySpace, gocui.ModNone, gameInputEnter)
 }

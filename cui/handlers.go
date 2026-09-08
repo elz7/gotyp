@@ -90,9 +90,9 @@ func gameMenuEnter(g *gocui.Gui, v *gocui.View) error {
 	go func() {
 		<-syncGameOver
 		widgetSwitcher.Switch(WidgetGameScore)
-		c, w := game.CurrentGame.Score()
-		v, _ := g.View(ViewGameScore)
-		fmt.Fprintf(v, "Correct = %d\nWrong = %d", c, w)
+		s := game.CurrentGame.Score()
+		v, _ := g.View(ViewGameEnd)
+		fmt.Fprintf(v, "Correct = %d\nWrong = %d", s.Correct, s.Wrong)
 	}()
 
 	return widgetSwitcher.Switch(WidgetGame)

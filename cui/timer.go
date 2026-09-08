@@ -18,7 +18,7 @@ func formatDuration(d time.Duration) string {
 }
 
 func timer(g *gocui.Gui) {
-	dur := game.Settings.RoundDuration
+	dur := game.Settings.GameDuration
 	syncGameOver = make(chan struct{})
 
 	for range time.Tick(time.Second) {

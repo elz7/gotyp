@@ -8,16 +8,15 @@ import (
 )
 
 type TypingSpeedGame struct {
-	CorrectCount int
-	WrongCount   int
-	Words        []string
-	Pos          int
-	Green        *color.Color
-	Red          *color.Color
+	score Score
+	words []string
+	pos   int
+	green *color.Color
+	red   *color.Color
 }
 
 func (g *TypingSpeedGame) PlayerMove(v *gocui.View, value string) {
-	w := g.Words[g.Pos]
+	w := g.words[g.pos]
 	var color *color.Color
 
 	old := w
@@ -26,25 +25,25 @@ func (g *TypingSpeedGame) PlayerMove(v *gocui.View, value string) {
 	}
 
 	if w == value {
-		color = g.Green
-		g.CorrectCount++
+		color = g.green
+		g.score.Correct++
 	} else {
-		color = g.Red
-		g.WrongCount++
+		color = g.red
+		g.score.Wrong++
 	}
 	w = old
 
 	color.Fprintf(v, "%s ", w)
 
-	g.Pos++
+	g.pos++
 }
 
-func (g *TypingSpeedGame) Score() (correct int, wrong int) {
-	return g.CorrectCount, g.WrongCount
+func (g *TypingSpeedGame) Score() Score {
+	return g.score
 }
 
 func (g *TypingSpeedGame) GenerateGameData(b *gocui.View) {
-	words := getWords()
+	words := getWords(Settings.Language)
 	x, y := b.Size()
 
 	var builder strings.Builder
@@ -56,16 +55,16 @@ func (g *TypingSpeedGame) GenerateGameData(b *gocui.View) {
 			if w == "\n" {
 				break
 			}
-			remainingSpace -= len(w)
+			builder.WriteString(" ")
+			g.words = append(g.words, w)
+			remainingSpace -= len(w) + 1
 		}
 	}
 
-	s := builder.String()
-	g.Words = strings.Split(s, " ")
-	b.WriteString(s)
+	b.WriteString(builder.String())
 	b.SetWritePos(0, 0)
 }
 
 func NewTypingSpeedGame() Game {
-	return &TypingSpeedGame{Green: color.New(color.FgGreen), Red: color.New(color.FgRed)}
+	return &TypingSpeedGame{green: color.New(color.FgGreen), red: color.New(color.FgRed)}
 }

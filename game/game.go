@@ -6,16 +6,21 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
+type Score struct {
+	Correct int
+	Wrong   int
+}
+
 type Game interface {
 	PlayerMove(v *gocui.View, input string)
 	GenerateGameData(b *gocui.View)
-	Score() (correct int, wrong int)
+	Score() Score
 }
 
 var CurrentGame Game
 
-func getWords() map[int][]string {
-	switch Settings.Language {
+func getWords(lang string) map[int][]string {
+	switch lang {
 	case "en":
 		return englishWords
 	default:
@@ -40,5 +45,5 @@ func getRandomWordThatFits(words map[int][]string, remainingSpace int) string {
 
 	i := min(rand.Intn(remainingSpace)+1, getMaxKey(words))
 	nWords := words[i]
-	return nWords[rand.Intn(len(nWords))] + " "
+	return nWords[rand.Intn(len(nWords))]
 }
