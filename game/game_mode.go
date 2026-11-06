@@ -14,7 +14,7 @@ var GameModes = []GameMode{
 	},
 	{
 		Name:        "Lyrics Game",
-		Description: "Enter song name and practice typing the lyrics",
+		Description: "Some cool description\nTo test justify alignment\nYo yo",
 		CreateGame:  NewLyricsGame,
 	},
 }

@@ -14,7 +14,7 @@ const (
 	WidgetSelectGameMode = "widget-select-game-mode"
 	WidgetSettings       = "widget-settings"
 	WidgetGame           = "widget-game"
-	WidgetGameScore      = "widget-game-score"
+	WidgetGameOver       = "widget-game-score"
 )
 
 // Views
@@ -28,7 +28,7 @@ const (
 	ViewGameInput           = "view-game-input"
 	ViewGameBoard           = "view-game-board"
 	ViewSettings            = "view-settings"
-	ViewGameEnd             = "view-game-score"
+	ViewGameOver            = "view-game-score"
 )
 
 func layout(g *gocui.Gui) error {
@@ -140,11 +140,11 @@ func layout(g *gocui.Gui) error {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
-		v.Frame = true
+		v.Frame = false
 		v.Visible = false
 	}
 
-	if v, err := g.SetView(ViewGameEnd,
+	if v, err := g.SetView(ViewGameOver,
 		maxX/2-25, maxY/2-3,
 		maxX/2+25, maxY/2+3,
 		0); err != nil {

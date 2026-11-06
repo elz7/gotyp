@@ -55,20 +55,28 @@ func gameMenuArrowUp(g *gocui.Gui, v *gocui.View) error {
 	c := cursorUp(v)
 
 	if c >= len(game.GameModes) {
-		return SetViewBufferString(g, ViewGameModeDescription, "Back to main menu.")
+		return SetViewBufferString(g, ViewGameModeDescription, "Back to main menu", ViewBufferStringOptions{
+			Alignment: AlignCenter,
+		})
 	}
 
-	return SetViewBufferString(g, ViewGameModeDescription, game.GameModes[c].Description)
+	return SetViewBufferString(g, ViewGameModeDescription, game.GameModes[c].Description, ViewBufferStringOptions{
+		Alignment: AlignCenter,
+	})
 }
 
 func gameMenuArrowDown(g *gocui.Gui, v *gocui.View) error {
 	c := cursorDown(v)
 
 	if c >= len(game.GameModes) {
-		return SetViewBufferString(g, ViewGameModeDescription, "Back to main menu.")
+		return SetViewBufferString(g, ViewGameModeDescription, "Back to main menu", ViewBufferStringOptions{
+			Alignment: AlignCenter,
+		})
 	}
 
-	return SetViewBufferString(g, ViewGameModeDescription, game.GameModes[c].Description)
+	return SetViewBufferString(g, ViewGameModeDescription, game.GameModes[c].Description, ViewBufferStringOptions{
+		Alignment: AlignCenter,
+	})
 }
 
 func gameMenuEnter(g *gocui.Gui, v *gocui.View) error {
@@ -89,10 +97,11 @@ func gameMenuEnter(g *gocui.Gui, v *gocui.View) error {
 	go timer(g)
 	go func() {
 		<-syncGameOver
-		widgetSwitcher.Switch(WidgetGameScore)
+		widgetSwitcher.Switch(WidgetGameOver)
 		s := game.CurrentGame.Score()
-		v, _ := g.View(ViewGameEnd)
-		fmt.Fprintf(v, "Correct = %d\nWrong = %d", s.Correct, s.Wrong)
+		SetViewBufferString(g, ViewGameOver, fmt.Sprintf("Correct %d\nWrong %d", s.Correct, s.Wrong), ViewBufferStringOptions{
+			Alignment: AlignJustify,
+		})
 	}()
 
 	return widgetSwitcher.Switch(WidgetGame)

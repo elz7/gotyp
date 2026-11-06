@@ -9,35 +9,44 @@ import (
 )
 
 type TypingSpeedGame struct {
-	score Score
-	words []string
-	pos   int
-	green *color.Color
-	red   *color.Color
+	score    Score
+	words    []string
+	index    int
+	occupied int
 }
 
 func (g *TypingSpeedGame) PlayerMove(v *gocui.View, value string) bool {
-	w := g.words[g.pos]
-	var color *color.Color
+	if g.index == len(g.words)-1 {
+		return true
+	}
 
-	if w == "\n" {
+	word := g.words[g.index]
+
+	if word == "\n" {
 		fmt.Fprint(v, "\n")
-		g.pos++
-		w = g.words[g.pos]
+		g.index++
+		word = g.words[g.index]
+		g.occupied = 0
 	}
 
-	if w == value {
-		color = g.green
-		g.score.Correct++
+	score := &g.score.Correct
+	printer := color.New(color.FgGreen)
+	if word != value {
+		score = &g.score.Wrong
+		printer = color.New(color.FgRed)
+	}
+	*score++
+
+	width, _ := v.Size()
+	if width-g.occupied == len(word)+1 {
+		printer.Fprintf(v, " %s", word)
 	} else {
-		color = g.red
-		g.score.Wrong++
+		printer.Fprintf(v, "%s ", word)
 	}
+	g.occupied += len(word) + 1
+	g.index++
 
-	color.Fprintf(v, "%s ", w)
-	g.pos++
-
-	return g.pos == len(g.words)-1
+	return false
 }
 
 func (g *TypingSpeedGame) Score() Score {
@@ -46,7 +55,8 @@ func (g *TypingSpeedGame) Score() Score {
 
 func (g *TypingSpeedGame) GenerateGameData(b *gocui.View) {
 	g.words = make([]string, 0)
-	g.pos = 0
+	g.index = 0
+	g.occupied = 0
 
 	words := getWords(Settings.Language)
 	x, y := b.Size()
@@ -54,16 +64,23 @@ func (g *TypingSpeedGame) GenerateGameData(b *gocui.View) {
 	var builder strings.Builder
 	for range y {
 		remainingSpace := x
-		for {
+		for remainingSpace > 0 {
 			w := getRandomWordThatFits(words, remainingSpace)
-			builder.WriteString(w)
+
 			g.words = append(g.words, w)
-			if w == "\n" {
-				break
+
+			if remainingSpace-len(w) == 1 {
+				builder.WriteString(" ")
+				builder.WriteString(w)
+				remainingSpace -= len(w) + 1
+			} else {
+				builder.WriteString(w)
+				builder.WriteString(" ")
+				remainingSpace -= len(w) + 1
 			}
-			builder.WriteString(" ")
-			remainingSpace -= len(w) + 1
 		}
+		g.words = append(g.words, "\n")
+		builder.WriteString("\n")
 	}
 
 	b.SetWritePos(0, 0)
@@ -73,5 +90,5 @@ func (g *TypingSpeedGame) GenerateGameData(b *gocui.View) {
 }
 
 func NewTypingSpeedGame() Game {
-	return &TypingSpeedGame{green: color.New(color.FgGreen), red: color.New(color.FgRed)}
+	return &TypingSpeedGame{}
 }
