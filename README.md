@@ -2,15 +2,14 @@
 
 A small typing game built with Go.
 
-Choose a game mode, type the words appearing on screen, and see how fast and accurately you can type.
+Test your skills across different text-based challenges.
 
 ## 🎮 Game Modes
-Typing Speed Test — type the words that appear on screen in real time.
 
-🟢 Correct characters are highlighted in green<br>
-🔴 Wrong characters are highlighted in red
+**Typing Speed Test** — test how fast you can type by entering words displayed on the screen. Track your typing speed and accuracy in real time.
 
-Blind Typing — coming soon
+🟢 Correct words are highlighted in green  
+🔴 Wrong words are highlighted in red
 
 ## 🎥 Demo
 ![gotyp demo](assets/demo.gif)
