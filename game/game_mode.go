@@ -12,7 +12,7 @@ var GameModes = []GameMode{
 	{
 		Name:        "Typing speed Test",
 		Description: "Try to type as fast as you can",
-		CreateGame:  func() Game { return NewTypingSpeedGame("en", 20*time.Second) },
+		CreateGame:  func() Game { return NewTypingSpeedGame("ru", 20*time.Second) },
 	},
 	{
 		Name:        "Lyrics Game",

@@ -20,6 +20,8 @@ func getWords(lang string) map[int][]string {
 	switch lang {
 	case "en":
 		return englishWords
+	case "ru":
+		return russianWords
 	default:
 		return englishWords
 	}

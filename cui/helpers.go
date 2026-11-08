@@ -3,6 +3,7 @@ package cui
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/awesome-gocui/gocui"
 )
@@ -50,7 +51,7 @@ func SetViewBufferString(g *gocui.Gui, view, text string, options ...ViewBufferS
 	case AlignRight:
 		width, _ := v.Size()
 		for line := range strings.SplitSeq(text, "\n") {
-			if l := len(line); l < width {
+			if l := utf8.RuneCountInString(line); l < width {
 				value.WriteString(strings.Repeat(" ", width-l))
 				value.WriteString(line)
 			} else {
@@ -60,7 +61,7 @@ func SetViewBufferString(g *gocui.Gui, view, text string, options ...ViewBufferS
 	case AlignCenter:
 		width, _ := v.Size()
 		for line := range strings.SplitSeq(text, "\n") {
-			if l := len(line); l < width {
+			if l := utf8.RuneCountInString(line); l < width {
 				pad := (width - l) / 2
 				value.WriteString(strings.Repeat(" ", pad))
 				value.WriteString(line)
@@ -75,7 +76,7 @@ func SetViewBufferString(g *gocui.Gui, view, text string, options ...ViewBufferS
 		width, _ := v.Size()
 		for line := range strings.SplitSeq(text, "\n") {
 			gaps := strings.Count(line, " ")
-			space := (width - (len(line) - gaps)) / gaps
+			space := (width - (utf8.RuneCountInString(line) - gaps)) / gaps
 			value.WriteString(strings.ReplaceAll(line, " ", strings.Repeat(" ", space)))
 			value.WriteString("\n")
 		}

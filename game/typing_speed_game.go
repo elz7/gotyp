@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/awesome-gocui/gocui"
 	"github.com/fatih/color"
@@ -19,7 +20,6 @@ type TypingSpeedGame struct {
 	occupied int
 
 	settings struct {
-		// supported: en
 		lang     string
 		duration time.Duration
 	}
@@ -48,12 +48,12 @@ func (g *TypingSpeedGame) PlayerMove(v *gocui.View, value string) bool {
 	*score++
 
 	width, _ := v.Size()
-	if width-g.occupied == len(word)+1 {
+	if width-g.occupied == utf8.RuneCountInString(word)+1 {
 		printer.Fprintf(v, " %s", word)
 	} else {
 		printer.Fprintf(v, "%s ", word)
 	}
-	g.occupied += len(word) + 1
+	g.occupied += utf8.RuneCountInString(word) + 1
 	g.index++
 
 	return false
@@ -87,14 +87,14 @@ func (g *TypingSpeedGame) GenerateGameData(b *gocui.View) {
 
 			g.words = append(g.words, w)
 
-			if remainingSpace-len(w) == 1 {
+			if remainingSpace-utf8.RuneCountInString(w) == 1 {
 				builder.WriteString(" ")
 				builder.WriteString(w)
-				remainingSpace -= len(w) + 1
+				remainingSpace -= utf8.RuneCountInString(w) + 1
 			} else {
 				builder.WriteString(w)
 				builder.WriteString(" ")
-				remainingSpace -= len(w) + 1
+				remainingSpace -= utf8.RuneCountInString(w) + 1
 			}
 		}
 		g.words = append(g.words, "\n")
@@ -124,6 +124,7 @@ func (g *TypingSpeedGame) RunTimer(gui *gocui.Gui, view *gocui.View, syncDone ch
 	}
 }
 
+// Supported languages: en, ru
 func NewTypingSpeedGame(language string, duration time.Duration) Game {
 	game := TypingSpeedGame{}
 	game.settings.lang = language
