@@ -3,16 +3,26 @@ package game
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/awesome-gocui/gocui"
 	"github.com/fatih/color"
 )
 
 type TypingSpeedGame struct {
-	score    Score
+	score struct {
+		correct int
+		wrong   int
+	}
 	words    []string
 	index    int
 	occupied int
+
+	settings struct {
+		// supported: en
+		lang     string
+		duration time.Duration
+	}
 }
 
 func (g *TypingSpeedGame) PlayerMove(v *gocui.View, value string) bool {
@@ -29,10 +39,10 @@ func (g *TypingSpeedGame) PlayerMove(v *gocui.View, value string) bool {
 		g.occupied = 0
 	}
 
-	score := &g.score.Correct
+	score := &g.score.correct
 	printer := color.New(color.FgGreen)
 	if word != value {
-		score = &g.score.Wrong
+		score = &g.score.wrong
 		printer = color.New(color.FgRed)
 	}
 	*score++
@@ -49,8 +59,16 @@ func (g *TypingSpeedGame) PlayerMove(v *gocui.View, value string) bool {
 	return false
 }
 
-func (g *TypingSpeedGame) Score() Score {
-	return g.score
+func (g *TypingSpeedGame) ScoreString() string {
+	var (
+		correct  = g.score.correct
+		wrong    = g.score.wrong
+		accuracy = float64(g.score.correct) / float64(g.score.correct+g.score.wrong) * 100.0
+		rawWPM   = float64(g.score.correct+g.score.wrong) / g.settings.duration.Minutes()
+		netWPM   = float64(g.score.correct) / g.settings.duration.Minutes()
+	)
+	return fmt.Sprintf("Correct: %d\nWrong: %d\nAccuracy: %02f\nRawWPM: %d\nNetWPM: %d",
+		correct, wrong, accuracy, int(rawWPM), int(netWPM))
 }
 
 func (g *TypingSpeedGame) GenerateGameData(b *gocui.View) {
@@ -58,7 +76,7 @@ func (g *TypingSpeedGame) GenerateGameData(b *gocui.View) {
 	g.index = 0
 	g.occupied = 0
 
-	words := getWords(Settings.Language)
+	words := getWords(g.settings.lang)
 	x, y := b.Size()
 
 	var builder strings.Builder
@@ -89,6 +107,26 @@ func (g *TypingSpeedGame) GenerateGameData(b *gocui.View) {
 
 }
 
-func NewTypingSpeedGame() Game {
-	return &TypingSpeedGame{}
+func (g *TypingSpeedGame) RunTimer(gui *gocui.Gui, view *gocui.View, syncDone chan struct{}) {
+	dur := g.settings.duration
+
+	for range time.Tick(time.Second) {
+		title := formatDuration(dur)
+		gui.Update(func(g *gocui.Gui) error {
+			view.Title = title
+			return nil
+		})
+		dur -= time.Second
+		if dur.Seconds() < 0 {
+			syncDone <- struct{}{}
+			break
+		}
+	}
+}
+
+func NewTypingSpeedGame(language string, duration time.Duration) Game {
+	game := TypingSpeedGame{}
+	game.settings.lang = language
+	game.settings.duration = duration
+	return &game
 }

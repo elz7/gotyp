@@ -6,16 +6,12 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-type Score struct {
-	Correct int
-	Wrong   int
-}
-
 type Game interface {
 	// Returns true if there is a need for generating new game data, false otherwise.
 	PlayerMove(v *gocui.View, input string) bool
 	GenerateGameData(b *gocui.View)
-	Score() Score
+	ScoreString() string
+	RunTimer(*gocui.Gui, *gocui.View, chan struct{})
 }
 
 var CurrentGame Game

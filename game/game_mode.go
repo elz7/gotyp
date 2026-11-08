@@ -1,5 +1,7 @@
 package game
 
+import "time"
+
 type GameMode struct {
 	Name        string
 	Description string
@@ -10,7 +12,7 @@ var GameModes = []GameMode{
 	{
 		Name:        "Typing speed Test",
 		Description: "Try to type as fast as you can",
-		CreateGame:  NewTypingSpeedGame,
+		CreateGame:  func() Game { return NewTypingSpeedGame("en", 20*time.Second) },
 	},
 	{
 		Name:        "Lyrics Game",

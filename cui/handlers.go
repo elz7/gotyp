@@ -1,8 +1,6 @@
 package cui
 
 import (
-	"fmt"
-
 	"github.com/awesome-gocui/gocui"
 	"github.com/elz7/gotyp/game"
 )
@@ -94,14 +92,16 @@ func gameMenuEnter(g *gocui.Gui, v *gocui.View) error {
 	b, _ := g.View(ViewGameBoard)
 	game.CurrentGame.GenerateGameData(b)
 
-	go timer(g)
+	syncDone := make(chan struct{})
+	inputView, _ := g.View(ViewGameInput)
+
+	go game.CurrentGame.RunTimer(g, inputView, syncDone)
 	go func() {
-		<-syncGameOver
+		<-syncDone
 		widgetSwitcher.Switch(WidgetGameOver)
-		s := game.CurrentGame.Score()
-		SetViewBufferString(g, ViewGameOver, fmt.Sprintf("Correct %d\nWrong %d", s.Correct, s.Wrong), ViewBufferStringOptions{
-			Alignment: AlignJustify,
-		})
+		score := game.CurrentGame.ScoreString()
+		options := ViewBufferStringOptions{Alignment: AlignJustify}
+		SetViewBufferString(g, ViewGameOver, score, options)
 	}()
 
 	return widgetSwitcher.Switch(WidgetGame)

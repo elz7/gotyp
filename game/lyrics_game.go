@@ -16,7 +16,11 @@ func (l *LyricsGame) PlayerMove(v *gocui.View, input string) bool {
 }
 
 // Score implements [Game].
-func (l *LyricsGame) Score() Score {
+func (l *LyricsGame) ScoreString() string {
+	panic("unimplemented")
+}
+
+func (l *LyricsGame) RunTimer(gui *gocui.Gui, view *gocui.View, syncDone chan struct{}) {
 	panic("unimplemented")
 }
 
